@@ -1,6 +1,7 @@
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui, QtCore
 import numpy as np
+import scipy.spatial
 import sys
 
 def TGenerator(kmax):
@@ -34,6 +35,22 @@ class GraphPlotter(object):
         symbols = ['o'] * len(points)
         self._g.setData(pos=points, adj=adjacency, size=10, symbols=symbols, pxMode=False)
 
+def getDelaunayAdjacency(points):
+    delaunayTriangulation = scipy.spatial.Delaunay(points)
+    v = delaunayTriangulation.vertex_neighbor_vertices
+
+    adjacency = list()
+    indices = v[0]
+    indptr = v[1]
+
+    for idx in range(0, len(points) - 1):
+        for neighbor in indptr[indices[idx]:indices[idx+1]]:
+            adjacency.append([idx, neighbor])
+
+    adjacency = np.array(adjacency)
+
+    return adjacency
+
 def test():
     # First 3 points are given in problem.
     p = pointGenerator(3)
@@ -45,9 +62,7 @@ def main():
     kmax = 20
 
     points = np.array(list(pointGenerator(kmax)))
-    for p in points:
-        print(p)
-    adjacency = np.array([0,0])
+    adjacency = getDelaunayAdjacency(points)
 
     plotter = GraphPlotter()
     plotter.update(points, adjacency)
