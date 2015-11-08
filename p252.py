@@ -35,6 +35,10 @@ class GraphPlotter(object):
         symbols = ['o'] * len(points)
         self._g.setData(pos=points, adj=adjacency, size=10, symbols=symbols, pxMode=False)
 
+def triangleArea(t):
+    # See http://geomalgorithms.com/a01-_area.html
+    return abs(((t[1][0] - t[0][0]) * (t[2][1] - t[0][1]) - (t[2][0] - t[0][0]) * (t[1][1] - t[0][1])) / 2.0)
+
 class DelaunayWrapper(object):
     def __init__(self, points):
         self._delaunay = scipy.spatial.Delaunay(points)
@@ -54,6 +58,21 @@ class DelaunayWrapper(object):
             self._adjacency = np.array(self._adjacency)
 
         return self._adjacency
+
+    @property
+    def triangles(self):
+        if not hasattr(self, '_triangles'):
+            num_simplices = self._delaunay.simplices.shape[0]
+            simplex_indices = list(range(0, num_simplices))
+            self._triangles = list()
+            for simplex_idx in simplex_indices:
+                simplex = self._delaunay.simplices[simplex_idx, :]
+                self._triangles.append([self._delaunay.points[simplex[0]],
+                                        self._delaunay.points[simplex[1]],
+                                        self._delaunay.points[simplex[2]],
+                                       ])
+
+        return zip(simplex_indices, self._triangles)
 
 def plot(points, adjacency):
     plotter = GraphPlotter()
@@ -76,6 +95,9 @@ def main():
     points = np.array(list(pointGenerator(kmax)))
 
     d = DelaunayWrapper(points)
+
+    for idx, triangle in sorted(d.triangles, key=lambda t: triangleArea(t[1])):
+        print("{0} ({1}): {2}".format(idx, triangleArea(triangle), triangle))
 
     plot(points, d.adjacency)
 
