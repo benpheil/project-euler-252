@@ -51,6 +51,14 @@ def getDelaunayAdjacency(points):
 
     return adjacency
 
+def plot(points, adjacency):
+    plotter = GraphPlotter()
+    plotter.update(points, adjacency)
+
+    if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
+        QtGui.QApplication.instance().exec_()
+
+
 def test():
     # First 3 points are given in problem.
     p = pointGenerator(3)
@@ -64,11 +72,7 @@ def main():
     points = np.array(list(pointGenerator(kmax)))
     adjacency = getDelaunayAdjacency(points)
 
-    plotter = GraphPlotter()
-    plotter.update(points, adjacency)
-
-    if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
-        QtGui.QApplication.instance().exec_()
+    plot(points, adjacency)
 
 if __name__ == '__main__':
     test()
