@@ -35,15 +35,13 @@ class GraphPlotter(object):
         symbols = ['o'] * len(points)
         self._g.setData(pos=points, adj=adjacency, size=10, symbols=symbols, pxMode=False)
 
-def getDelaunayAdjacency(points):
-    delaunayTriangulation = scipy.spatial.Delaunay(points)
-    v = delaunayTriangulation.vertex_neighbor_vertices
-
+def adjacencyFromDelaunay(d):
+    v = d.vertex_neighbor_vertices
     adjacency = list()
     indices = v[0]
     indptr = v[1]
 
-    for idx in range(0, len(points) - 1):
+    for idx in range(0, len(v[0]) - 1):
         for neighbor in indptr[indices[idx]:indices[idx+1]]:
             adjacency.append([idx, neighbor])
 
@@ -70,7 +68,10 @@ def main():
     kmax = 20
 
     points = np.array(list(pointGenerator(kmax)))
-    adjacency = getDelaunayAdjacency(points)
+
+    d = scipy.spatial.Delaunay(points)
+
+    adjacency = adjacencyFromDelaunay(d)
 
     plot(points, adjacency)
 
