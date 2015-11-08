@@ -35,19 +35,25 @@ class GraphPlotter(object):
         symbols = ['o'] * len(points)
         self._g.setData(pos=points, adj=adjacency, size=10, symbols=symbols, pxMode=False)
 
-def adjacencyFromDelaunay(d):
-    v = d.vertex_neighbor_vertices
-    adjacency = list()
-    indices = v[0]
-    indptr = v[1]
+class DelaunayWrapper(object):
+    def __init__(self, points):
+        self._delaunay = scipy.spatial.Delaunay(points)
 
-    for idx in range(0, len(v[0]) - 1):
-        for neighbor in indptr[indices[idx]:indices[idx+1]]:
-            adjacency.append([idx, neighbor])
+    @property
+    def adjacency(self):
+        if not hasattr(self, '_adjacency'):
+            v = self._delaunay.vertex_neighbor_vertices
+            self._adjacency = list()
+            indices = v[0]
+            indptr = v[1]
 
-    adjacency = np.array(adjacency)
+            for idx in range(0, len(v[0]) - 1):
+                for neighbor in indptr[indices[idx]:indices[idx+1]]:
+                    self._adjacency.append([idx, neighbor])
 
-    return adjacency
+            self._adjacency = np.array(self._adjacency)
+
+        return self._adjacency
 
 def plot(points, adjacency):
     plotter = GraphPlotter()
@@ -69,11 +75,9 @@ def main():
 
     points = np.array(list(pointGenerator(kmax)))
 
-    d = scipy.spatial.Delaunay(points)
+    d = DelaunayWrapper(points)
 
-    adjacency = adjacencyFromDelaunay(d)
-
-    plot(points, adjacency)
+    plot(points, d.adjacency)
 
 if __name__ == '__main__':
     test()
