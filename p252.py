@@ -15,7 +15,7 @@ def TGenerator(kmax):
 def pointGenerator(kmax):
     T = TGenerator(2*kmax)
     for T1 in T:
-        T2 = T.next()
+        T2 = next(T)
         yield [T1, T2]
 
 class GraphPlotter(object):
@@ -60,9 +60,9 @@ def plot(points, adjacency):
 def test():
     # First 3 points are given in problem.
     p = pointGenerator(3)
-    assert(p.next() == [527, 144])
-    assert(p.next() == [-488, 732])
-    assert(p.next() == [-454, -947])
+    assert(next(p) == [527, 144])
+    assert(next(p) == [-488, 732])
+    assert(next(p) == [-454, -947])
 
 def main():
     kmax = 20
