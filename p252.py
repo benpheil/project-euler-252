@@ -1,5 +1,4 @@
-import pyqtgraph as pg
-from pyqtgraph.Qt import QtGui, QtCore
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy.spatial
 import sys
@@ -19,21 +18,14 @@ def pointGenerator(kmax):
         yield [T1, T2]
 
 class GraphPlotter(object):
-    def __init__(self):
-        # Enable antialiasing for prettier plots
-        pg.setConfigOptions(antialias=True)
-
-        self._w = pg.GraphicsWindow()
-        self._w.setWindowTitle('Problem 252 Graph')
-        self._v = self._w.addViewBox()
-        self._v.setAspectLocked()
-
-        self._g = pg.GraphItem()
-        self._v.addItem(self._g)
-
-    def update(self, points, adjacency):
-        symbols = ['o'] * len(points)
-        self._g.setData(pos=points, adj=adjacency, size=10, symbols=symbols, pxMode=False)
+    def update(self, points, poly):
+        from matplotlib.patches import Polygon
+        p = Polygon(poly)
+        x = points[:,0]
+        y = points[:,1]
+        plt.scatter(x, y)
+        plt.gca().add_patch(p)
+        plt.show()
 
 def triangleArea(t):
     # See http://geomalgorithms.com/a01-_area.html
@@ -74,13 +66,12 @@ class DelaunayWrapper(object):
 
         return zip(simplex_indices, self._triangles)
 
-def plot(points, adjacency):
+    def pointIndiciesInTriangle(self, idx):
+        return self._delaunay.simplices[idx][:]
+
+def plot(points, poly):
     plotter = GraphPlotter()
-    plotter.update(points, adjacency)
-
-    if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
-        QtGui.QApplication.instance().exec_()
-
+    plotter.update(points, poly)
 
 def test():
     # First 3 points are given in problem.
@@ -96,10 +87,17 @@ def main():
 
     d = DelaunayWrapper(points)
 
-    for idx, triangle in sorted(d.triangles, key=lambda t: triangleArea(t[1])):
+    trianglesSorted = sorted(d.triangles, key=lambda t: triangleArea(t[1]))
+    for idx, triangle in trianglesSorted:
         print("{0} ({1}): {2}".format(idx, triangleArea(triangle), triangle))
 
-    plot(points, d.adjacency)
+    biggestIdx = trianglesSorted[-1][0]
+    print(biggestIdx)
+    biggestIndicies = d.pointIndiciesInTriangle(biggestIdx)
+    poly = points[biggestIndicies]
+    print(biggestIndicies)
+
+    plot(points, poly)
 
 if __name__ == '__main__':
     test()
