@@ -83,19 +83,20 @@ def test():
 def main():
     kmax = 20
 
+    # Generate the points.
     points = np.array(list(pointGenerator(kmax)))
 
+    # Calculate the Delaunay triangulation of the points.
     d = DelaunayWrapper(points)
 
+    # Find the largest triangle.
     trianglesSorted = sorted(d.triangles, key=lambda t: triangleArea(t[1]))
-    for idx, triangle in trianglesSorted:
-        print("{0} ({1}): {2}".format(idx, triangleArea(triangle), triangle))
-
     biggestIdx = trianglesSorted[-1][0]
-    print(biggestIdx)
     biggestIndicies = d.pointIndiciesInTriangle(biggestIdx)
-    poly = points[biggestIndicies]
-    print(biggestIndicies)
+
+    triangleIndicesInPolygon = set([biggestIdx])
+    pointIndicesInPolygon = set(biggestIndicies)
+    poly = points[list(pointIndicesInPolygon)]
 
     plot(points, poly)
 
