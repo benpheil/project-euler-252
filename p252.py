@@ -102,6 +102,7 @@ class Polygon(object):
             self._points = set()
 
     def addTriangle(self, triangle):
+        """ Merge a triangle into the Polygon.  Asserts that the resulting polygon is convex. """
         self.triangles.add(triangle)
         for p in triangle.points:
             self._points.add(tuple(p))
@@ -113,6 +114,7 @@ class Polygon(object):
 
     @property
     def points(self):
+        """ Return the Polygon's points in counterclockwise order. """
         hull =  scipy.spatial.ConvexHull(list(self._points))
         return hull.points[hull.vertices]
 
