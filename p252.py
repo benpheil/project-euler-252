@@ -45,7 +45,6 @@ def polygonArea(p):
 
 class DelaunayWrapper(object):
     def __init__(self, points):
-        print("points: {0}".format(points))
         self._delaunay = scipy.spatial.Delaunay(points, incremental=True)
 
     @property
@@ -106,10 +105,10 @@ class Polygon(object):
         self.triangles.add(triangle)
         for p in triangle.points:
             self._points.add(tuple(p))
-        if len(list(self.triangles)) > 1:
-            self.delaunay = DelaunayWrapper(list(self._points))
         if self.delaunay is not None:
             self.delaunay.addPoints(triangle.points)
+        elif len(list(self.triangles)) > 1:
+            self.delaunay = DelaunayWrapper(list(self._points))
 
     @property
     def points(self):
