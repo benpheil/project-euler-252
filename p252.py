@@ -145,8 +145,6 @@ def main():
 
     poly.addTriangle(trianglesSorted[-2])
 
-    print("Points: {0}".format(poly.points))
-
     plot(points, poly.points)
 
 if __name__ == '__main__':
