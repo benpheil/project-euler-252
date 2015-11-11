@@ -107,14 +107,14 @@ class Polygon(object):
         for p in triangle.points:
             self._points.add(tuple(p))
         if len(list(self.triangles)) > 1:
-            print(self.triangles)
-            self.delaunay = DelaunayWrapper(self.points)
+            self.delaunay = DelaunayWrapper(list(self._points))
         if self.delaunay is not None:
             self.delaunay.addPoints(triangle.points)
 
     @property
     def points(self):
-        return list(self._points)
+        hull =  scipy.spatial.ConvexHull(list(self._points))
+        return hull.points[hull.vertices]
 
 def plot(points, poly):
     plotter = GraphPlotter()
@@ -144,6 +144,8 @@ def main():
     poly.addTriangle(trianglesSorted[-1])
 
     poly.addTriangle(trianglesSorted[-2])
+
+    print("Points: {0}".format(poly.points))
 
     plot(points, poly.points)
 
