@@ -1,3 +1,4 @@
+import copy
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.spatial
@@ -44,7 +45,8 @@ def polygonArea(p):
 
 class DelaunayWrapper(object):
     def __init__(self, points):
-        self._delaunay = scipy.spatial.Delaunay(points)
+        print("points: {0}".format(points))
+        self._delaunay = scipy.spatial.Delaunay(points, incremental=True)
 
     @property
     def adjacency(self):
@@ -75,10 +77,44 @@ class DelaunayWrapper(object):
                                         self._delaunay.points[simplex[2]],
                                        ])
 
-        return zip(simplex_indices, self._triangles)
+        return [Triangle(idx, points) for idx, points in zip(simplex_indices, self._triangles)]
 
     def pointIndiciesInTriangle(self, triangleIndex):
         return self._delaunay.simplices[triangleIndex][:]
+
+    def addPoints(self, points):
+        self._delaunay.add_points(points)
+
+class Triangle(object):
+    """ A triangle derived from a DelaunayWrapper. """
+    def __init__(self, triangleIndex, points):
+        self.triangleIndex = triangleIndex
+        self.points = points
+        self.area = triangleArea(points)
+
+class Polygon(object):
+    """ A polygon comprised of Triangles. """
+    def __init__(self, parent=None):
+        if parent is not None:
+            self = copy.copy(parent)
+        else:
+            self.delaunay = None
+            self.triangles = set()
+            self._points = set()
+
+    def addTriangle(self, triangle):
+        self.triangles.add(triangle)
+        for p in triangle.points:
+            self._points.add(tuple(p))
+        if len(list(self.triangles)) > 1:
+            print(self.triangles)
+            self.delaunay = DelaunayWrapper(self.points)
+        if self.delaunay is not None:
+            self.delaunay.addPoints(triangle.points)
+
+    @property
+    def points(self):
+        return list(self._points)
 
 def plot(points, poly):
     plotter = GraphPlotter()
@@ -101,15 +137,15 @@ def main():
     d = DelaunayWrapper(points)
 
     # Find the largest triangle.
-    trianglesSorted = sorted(d.triangles, key=lambda t: triangleArea(t[1]))
-    biggestIdx = trianglesSorted[-1][0]
-    biggestIndicies = d.pointIndiciesInTriangle(biggestIdx)
+    trianglesSorted = sorted(d.triangles, key=lambda t: t.area)
 
-    triangleIndicesInPolygon = set([biggestIdx])
-    pointIndicesInPolygon = set(biggestIndicies)
-    poly = points[list(pointIndicesInPolygon)]
+    # Initialize the candidate polygon with it
+    poly = Polygon()
+    poly.addTriangle(trianglesSorted[-1])
 
-    plot(points, poly)
+    poly.addTriangle(trianglesSorted[-2])
+
+    plot(points, poly.points)
 
 if __name__ == '__main__':
     test()
