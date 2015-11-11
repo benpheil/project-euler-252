@@ -66,8 +66,8 @@ class DelaunayWrapper(object):
 
         return zip(simplex_indices, self._triangles)
 
-    def pointIndiciesInTriangle(self, idx):
-        return self._delaunay.simplices[idx][:]
+    def pointIndiciesInTriangle(self, triangleIndex):
+        return self._delaunay.simplices[triangleIndex][:]
 
 def plot(points, poly):
     plotter = GraphPlotter()
