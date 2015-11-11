@@ -31,6 +31,17 @@ def triangleArea(t):
     # See http://geomalgorithms.com/a01-_area.html
     return abs(((t[1][0] - t[0][0]) * (t[2][1] - t[0][1]) - (t[2][0] - t[0][0]) * (t[1][1] - t[0][1])) / 2.0)
 
+def polygonArea(p):
+    # See https://stackoverflow.com/questions/24467972/calculate-area-of-polygon-given-x-y-coordinates
+    n = len(p)
+    area = 0.0
+    for i in range(n):
+        j = (i + 1) % n
+        area += p[i][0] * p[j][1]
+        area -= p[j][0] * p[i][1]
+    area = abs(area) / 2.0
+    return area
+
 class DelaunayWrapper(object):
     def __init__(self, points):
         self._delaunay = scipy.spatial.Delaunay(points)
