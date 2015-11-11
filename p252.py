@@ -113,6 +113,11 @@ class Polygon(object):
         assert(np.array_equal(set(tuple(p) for p in self.points), self._points))
 
     @property
+    def neighbors(self, d):
+        """ Get the Triangles in DelaunayWrapper `d` adjacent to the Polygon. """
+        raise NotImplemented
+
+    @property
     def points(self):
         """ Return the Polygon's points in counterclockwise order. """
         hull =  scipy.spatial.ConvexHull(list(self._points))
