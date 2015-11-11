@@ -109,6 +109,7 @@ class Polygon(object):
             self.delaunay.addPoints(triangle.points)
         elif len(list(self.triangles)) > 1:
             self.delaunay = DelaunayWrapper(list(self._points))
+        assert(np.array_equal(set(tuple(p) for p in self.points), self._points))
 
     @property
     def points(self):
