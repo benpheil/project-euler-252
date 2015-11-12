@@ -81,8 +81,9 @@ class DelaunayWrapper(object):
     def pointIndiciesInTriangle(self, triangleIndex):
         return self._delaunay.simplices[triangleIndex][:]
 
-    def addPoints(self, points):
-        self._delaunay.add_points(points)
+    def addTriangle(self, triangle):
+        self._delaunay.add_points(triangle.points)
+        self._triangles.append(triangle)
 
 class Triangle(object):
     """ A triangle derived from a DelaunayWrapper. """
@@ -107,7 +108,7 @@ class Polygon(object):
         for p in triangle.points:
             self._points.add(tuple(p))
         if self.delaunay is not None:
-            self.delaunay.addPoints(triangle.points)
+            self.delaunay.addTriangle(triangle)
         elif len(list(self.triangles)) > 1:
             self.delaunay = DelaunayWrapper(list(self._points))
         assert(np.array_equal(set(tuple(p) for p in self.points), self._points))
