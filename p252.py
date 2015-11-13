@@ -95,6 +95,17 @@ class Triangle(object):
         self.points = points
         self.area = triangleArea(points)
 
+    def __str__(self):
+        return "[{0}: {1}, {2}, {3}, A = {4}]".format(
+                self.triangleIndex,
+                self.points[0],
+                self.points[1],
+                self.points[2],
+                self.area)
+
+    def __repr__(self):
+        return self.__str__()
+
 class Polygon(object):
     """ A polygon comprised of Triangles. """
     def __init__(self, parent=None):
