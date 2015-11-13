@@ -64,10 +64,13 @@ class DelaunayWrapper(object):
         return self._adjacency
 
     @property
+    def _num_simplices(self):
+        return self._delaunay.simplices.shape[0]
+
+    @property
     def triangles(self):
+        simplex_indices = list(range(0, self._num_simplices))
         if not hasattr(self, '_triangles'):
-            num_simplices = self._delaunay.simplices.shape[0]
-            simplex_indices = list(range(0, num_simplices))
             self._triangles = list()
             for simplex_idx in simplex_indices:
                 simplex = self._delaunay.simplices[simplex_idx, :]
