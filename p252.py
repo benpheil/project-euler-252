@@ -88,6 +88,19 @@ class DelaunayWrapper(object):
         self._delaunay.add_points(triangle.points)
         self._triangles.append(triangle)
 
+    def neighbors(self, triangle):
+        neighborIndices = list()
+        for simplexIdx in self._delaunay.neighbors[triangle.triangleIndex, :]:
+            if simplexIdx != -1:
+                neighborIndices.append(simplexIdx)
+
+        neighborTriangles = list()
+        for triangle in self.triangles:
+            if triangle.triangleIndex in neighborIndices:
+                neighborTriangles.append(triangle)
+
+        return neighborTriangles
+
 class Triangle(object):
     """ A triangle derived from a DelaunayWrapper. """
     def __init__(self, triangleIndex, points):
@@ -127,10 +140,13 @@ class Polygon(object):
             self.delaunay = DelaunayWrapper(list(self._points))
         assert(np.array_equal(set(tuple(p) for p in self.points), self._points))
 
-    @property
     def neighbors(self, d):
         """ Get the Triangles in DelaunayWrapper `d` adjacent to the Polygon. """
-        raise NotImplemented
+        _neighbors = list()
+        for triangle in self.triangles:
+            _neighbors.extend(d.neighbors(triangle))
+
+        return _neighbors
 
     @property
     def points(self):
@@ -165,7 +181,7 @@ def main():
     poly = Polygon()
     poly.addTriangle(trianglesSorted[-1])
 
-    poly.addTriangle(trianglesSorted[-2])
+    print("Neighbors: {0}".format(poly.neighbors(d)))
 
     plot(points, poly.points)
 
