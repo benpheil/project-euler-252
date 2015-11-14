@@ -4,6 +4,11 @@ import numpy as np
 import scipy.spatial
 import sys
 
+"""
+Tried:
+    97589.0
+"""
+
 def TGenerator(kmax):
     seed = 290797
     idx = 0
@@ -129,7 +134,12 @@ class Polygon(object):
     """ A polygon comprised of Triangles. """
     def __init__(self, parent=None):
         if parent is not None:
-            self = copy.copy(parent)
+            self.triangles = copy.deepcopy(parent.triangles)
+            self._points = copy.deepcopy(parent._points)
+            if len(list(self.triangles)) > 1:
+                self.delaunay = DelaunayWrapper(list(self._points))
+            else:
+                self.delaunay = None
         else:
             self.delaunay = None
             self.triangles = set()
@@ -185,21 +195,21 @@ def plot(points, poly):
     plotter.update(points, poly)
 
 def expandPolygon(poly, d):
-    while True:
-        aMax = 0.
-        biggest = None
-        for neighbor in poly.neighbors(d):
-            if neighbor.area > aMax and poly.isConvexWithTriangle(neighbor):
-                aMax = neighbor.area
-                biggest = neighbor
+    aMax = 0.
+    biggest = None
+    for neighbor in poly.neighbors(d):
+        if poly.isConvexWithTriangle(neighbor):
+            candidate = Polygon(poly)
+            candidate.addTriangle(neighbor)
+            candidate = expandPolygon(candidate, d)
+            if candidate.area > aMax:
+                aMax = candidate.area
+                biggest = candidate
 
-        if biggest is None:
-            # We can't add any triangles and maintain convexity.
-            break;
-        else:
-            poly.addTriangle(biggest)
-
-    return poly
+    if biggest is None:
+        return poly
+    else:
+        return biggest
 
 def solve(kmax):
     # Generate the points.
