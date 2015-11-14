@@ -166,6 +166,20 @@ class Polygon(object):
         hull =  scipy.spatial.ConvexHull(list(self._points))
         return hull.points[hull.vertices]
 
+    def isConvexWithTriangle(self, triangle):
+        points = copy.copy(self._points)
+        for p in triangle.points:
+            points.add(tuple(p))
+        hull = scipy.spatial.ConvexHull(list(points))
+        hullPts = set()
+        for p in hull.points[hull.vertices]:
+            hullPts.add(tuple(p))
+        return points == hullPts
+
+    @property
+    def area(self):
+        return sum(t.area for t in self.triangles)
+
 def plot(points, poly):
     plotter = GraphPlotter()
     plotter.update(points, poly)
@@ -193,23 +207,29 @@ def main():
     poly = Polygon()
     poly.addTriangle(trianglesSorted[-1])
 
-    numIters = 2
+    numIters = 5
     for i in range(0, numIters):
         aMax = 0.
         biggest = None
         for neighbor in poly.neighbors(d):
             print("Neighbor {}: {}".format(i, neighbor))
-            if neighbor.area > aMax:
+            if neighbor.area > aMax and poly.isConvexWithTriangle(neighbor):
                 aMax = neighbor.area
                 biggest = neighbor
 
-        print("loop {}: {}\n\n".format(i, biggest))
-        poly.addTriangle(biggest)
+        if biggest is None:
+            # We can't add any triangles and maintain convexity.
+            print("Ran out of options after {} iterations.".format(i))
+            break;
+        else:
+            poly.addTriangle(biggest)
         print("poly triangles: {}".format(poly.triangles))
+        print("loop {}: {}\n\n".format(i, biggest))
 
     print("Neighbors of polygon: {0}".format(poly.neighbors(d)))
     print("Polygon: {0}".format(poly))
-    plot(points, list(poly._points))
+    print("Area: {}".format(poly.area))
+    plot(points, poly.points)
 
 if __name__ == '__main__':
     test()
