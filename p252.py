@@ -46,6 +46,7 @@ def polygonArea(p):
 class DelaunayWrapper(object):
     def __init__(self, points):
         self._delaunay = scipy.spatial.Delaunay(points, incremental=True)
+        self._triangles = list()
 
     @property
     def adjacency(self):
@@ -70,14 +71,12 @@ class DelaunayWrapper(object):
     @property
     def triangles(self):
         simplex_indices = list(range(0, self._num_simplices))
-        if not hasattr(self, '_triangles'):
-            self._triangles = list()
-            for simplex_idx in simplex_indices:
-                simplex = self._delaunay.simplices[simplex_idx, :]
-                self._triangles.append([self._delaunay.points[simplex[0]],
-                                        self._delaunay.points[simplex[1]],
-                                        self._delaunay.points[simplex[2]],
-                                       ])
+        for simplex_idx in simplex_indices:
+            simplex = self._delaunay.simplices[simplex_idx, :]
+            self._triangles.append([self._delaunay.points[simplex[0]],
+                                    self._delaunay.points[simplex[1]],
+                                    self._delaunay.points[simplex[2]],
+                                   ])
 
         return [Triangle(idx, points) for idx, points in zip(simplex_indices, self._triangles)]
 
