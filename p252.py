@@ -118,6 +118,12 @@ class Triangle(object):
     def __repr__(self):
         return self.__str__()
 
+    def __hash__(self):
+        return self.triangleIndex
+
+    def __eq__(self, other):
+        return self.triangleIndex == other.triangleIndex
+
 class Polygon(object):
     """ A polygon comprised of Triangles. """
     def __init__(self, parent=None):
