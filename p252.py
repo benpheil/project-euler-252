@@ -139,6 +139,7 @@ class Polygon(object):
 
     def addTriangle(self, triangle):
         """ Merge a triangle into the Polygon.  Asserts that the resulting polygon is convex. """
+        assert(triangle not in self.triangles)
         self.triangles.add(triangle)
         for p in triangle.points:
             self._points.add(tuple(p))
