@@ -26,6 +26,7 @@ class GraphPlotter(object):
         y = points[:,1]
         plt.scatter(x, y)
         plt.gca().add_patch(p)
+        plt.grid()
         plt.show()
 
 def triangleArea(t):
