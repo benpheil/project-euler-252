@@ -134,6 +134,9 @@ class Polygon(object):
             self.triangles = set()
             self._points = set()
 
+    def __str__(self):
+        return ", ".join([str(p) for p in self._points])
+
     def addTriangle(self, triangle):
         """ Merge a triangle into the Polygon.  Asserts that the resulting polygon is convex. """
         self.triangles.add(triangle)
