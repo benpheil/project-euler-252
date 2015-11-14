@@ -210,7 +210,12 @@ def solve(kmax):
 
     aMax = 0.
     biggest = None
-    for triangle in d.triangles:
+    numIters = 0
+    trianglesSorted = sorted(d.triangles, key=lambda t: -t.area)
+    for triangle in trianglesSorted:
+        numIters += 1
+        print("Trying triangle {} of {} (best = {})...".format(
+            numIters, len(d.triangles), aMax))
         poly = Polygon()
         poly.addTriangle(triangle)
         poly = expandPolygon(poly, d)
@@ -231,7 +236,7 @@ def test():
     assert(poly.area == 1049694.5)
 
 def main():
-    kmax = 20
+    kmax = 500
     points = np.array(list(pointGenerator(kmax)))
     poly = solve(kmax)
     print("Polygon: {0}".format(poly))
