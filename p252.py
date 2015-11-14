@@ -153,7 +153,9 @@ class Polygon(object):
         """ Get the Triangles in DelaunayWrapper `d` adjacent to the Polygon. """
         _neighbors = list()
         for triangle in self.triangles:
-            _neighbors.extend(d.neighbors(triangle))
+            for neighbor in d.neighbors(triangle):
+                if neighbor not in self.triangles:
+                    _neighbors.append(neighbor)
 
         return _neighbors
 
@@ -190,9 +192,23 @@ def main():
     poly = Polygon()
     poly.addTriangle(trianglesSorted[-1])
 
-    print("Neighbors: {0}".format(poly.neighbors(d)))
+    numIters = 2
+    for i in range(0, numIters):
+        aMax = 0.
+        biggest = None
+        for neighbor in poly.neighbors(d):
+            print("Neighbor {}: {}".format(i, neighbor))
+            if neighbor.area > aMax:
+                aMax = neighbor.area
+                biggest = neighbor
 
-    plot(points, poly.points)
+        print("loop {}: {}\n\n".format(i, biggest))
+        poly.addTriangle(biggest)
+        print("poly triangles: {}".format(poly.triangles))
+
+    print("Neighbors of polygon: {0}".format(poly.neighbors(d)))
+    print("Polygon: {0}".format(poly))
+    plot(points, list(poly._points))
 
 if __name__ == '__main__':
     test()
