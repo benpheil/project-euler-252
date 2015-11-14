@@ -184,20 +184,7 @@ def plot(points, poly):
     plotter = GraphPlotter()
     plotter.update(points, poly)
 
-def solve(kmax):
-    # Generate the points.
-    points = np.array(list(pointGenerator(kmax)))
-
-    # Calculate the Delaunay triangulation of the points.
-    d = DelaunayWrapper(points)
-
-    # Find the largest triangle.
-    trianglesSorted = sorted(d.triangles, key=lambda t: t.area)
-
-    # Initialize the candidate polygon with it
-    poly = Polygon()
-    poly.addTriangle(trianglesSorted[-1])
-
+def expandPolygon(poly, d):
     while True:
         aMax = 0.
         biggest = None
@@ -213,6 +200,25 @@ def solve(kmax):
             poly.addTriangle(biggest)
 
     return poly
+
+def solve(kmax):
+    # Generate the points.
+    points = np.array(list(pointGenerator(kmax)))
+
+    # Calculate the Delaunay triangulation of the points.
+    d = DelaunayWrapper(points)
+
+    aMax = 0.
+    biggest = None
+    for triangle in d.triangles:
+        poly = Polygon()
+        poly.addTriangle(triangle)
+        poly = expandPolygon(poly, d)
+        if poly.area > aMax:
+            aMax = poly.area
+            biggest = poly
+
+    return biggest
 
 def test():
     # First 3 points are given in problem.
