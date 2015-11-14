@@ -184,16 +184,7 @@ def plot(points, poly):
     plotter = GraphPlotter()
     plotter.update(points, poly)
 
-def test():
-    # First 3 points are given in problem.
-    p = pointGenerator(3)
-    assert(next(p) == [527, 144])
-    assert(next(p) == [-488, 732])
-    assert(next(p) == [-454, -947])
-
-def main():
-    kmax = 20
-
+def solve(kmax):
     # Generate the points.
     points = np.array(list(pointGenerator(kmax)))
 
@@ -207,26 +198,36 @@ def main():
     poly = Polygon()
     poly.addTriangle(trianglesSorted[-1])
 
-    numIters = 5
-    for i in range(0, numIters):
+    while True:
         aMax = 0.
         biggest = None
         for neighbor in poly.neighbors(d):
-            print("Neighbor {}: {}".format(i, neighbor))
             if neighbor.area > aMax and poly.isConvexWithTriangle(neighbor):
                 aMax = neighbor.area
                 biggest = neighbor
 
         if biggest is None:
             # We can't add any triangles and maintain convexity.
-            print("Ran out of options after {} iterations.".format(i))
             break;
         else:
             poly.addTriangle(biggest)
-        print("poly triangles: {}".format(poly.triangles))
-        print("loop {}: {}\n\n".format(i, biggest))
 
-    print("Neighbors of polygon: {0}".format(poly.neighbors(d)))
+    return poly
+
+def test():
+    # First 3 points are given in problem.
+    p = pointGenerator(3)
+    assert(next(p) == [527, 144])
+    assert(next(p) == [-488, 732])
+    assert(next(p) == [-454, -947])
+
+    poly = solve(20)
+    assert(poly.area == 1049694.5)
+
+def main():
+    kmax = 20
+    points = np.array(list(pointGenerator(kmax)))
+    poly = solve(kmax)
     print("Polygon: {0}".format(poly))
     print("Area: {}".format(poly.area))
     plot(points, poly.points)
