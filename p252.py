@@ -1,8 +1,8 @@
 import copy
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.spatial
 import sys
+import math
 
 """
 Tried:
@@ -24,13 +24,17 @@ def pointGenerator(kmax):
         yield [T1, T2]
 
 class GraphPlotter(object):
-    def update(self, points, poly):
+    def update(self, points, rootPoint, candidatePoints, poly):
         from matplotlib.patches import Polygon
         x = points[:,0]
         y = points[:,1]
-        plt.scatter(x, y)
+        plt.scatter(x, y, c='b')
+        x = candidatePoints[:, 0]
+        y = candidatePoints[:, 1]
+        plt.scatter(x, y, c='r')
+        plt.scatter(rootPoint[0], rootPoint[1], c='g')
         if poly is not None:
-            p = Polygon(poly)
+            p = Polygon(poly, closed=False, facecolor='none')
             plt.gca().add_patch(p)
         plt.grid()
         plt.show()
@@ -46,9 +50,13 @@ def polygonArea(p):
     area = abs(area) / 2.0
     return area
 
-def plot(points, poly):
+def angleBetweenPoints(p, q):
+    diff = q - p
+    return math.atan2(diff[1], diff[0])
+
+def plot(points, rootPoint, candidatePoints, poly):
     plotter = GraphPlotter()
-    plotter.update(points, poly)
+    plotter.update(points, rootPoint, candidatePoints, poly)
 
 def test():
     # First 3 points are given in problem.
@@ -58,10 +66,19 @@ def test():
     assert(next(p) == [-454, -947])
 
 def main():
-    kmax = 500
+    kmax = 200
     points = np.array(list(pointGenerator(kmax)))
 
-    plot(points, None)
+    for p in points:
+        clockwisePoints = sorted(list(points), key=lambda q: angleBetweenPoints(p, q))
+        star = list()
+        for q in clockwisePoints:
+            if q[0] < p[0]:
+                star.append(p)
+            elif q[0] > p[0]:
+                star.append(q)
+
+    plot(points, p, np.array(star), star)
 
 if __name__ == '__main__':
     test()
