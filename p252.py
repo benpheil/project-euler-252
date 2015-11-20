@@ -34,7 +34,7 @@ class GraphPlotter(object):
         plt.scatter(x, y, c='r')
         plt.scatter(rootPoint[0], rootPoint[1], c='g')
         if poly is not None:
-            p = Polygon(poly, closed=False, facecolor='none')
+            p = Polygon(poly, facecolor='none')
             plt.gca().add_patch(p)
         plt.grid()
         plt.show()
@@ -71,11 +71,9 @@ def main():
 
     for p in points:
         clockwisePoints = sorted(list(points), key=lambda q: angleBetweenPoints(p, q))
-        star = list()
+        star = [p]
         for q in clockwisePoints:
-            if q[0] < p[0]:
-                star.append(p)
-            elif q[0] > p[0]:
+            if q[0] > p[0]:
                 star.append(q)
 
     plot(points, p, np.array(star), star)
