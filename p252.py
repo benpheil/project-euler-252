@@ -54,6 +54,15 @@ def angleBetweenPoints(p, q):
     diff = q - p
     return math.atan2(diff[1], diff[0])
 
+def makeStar(p, points):
+    clockwisePoints = sorted(list(points), key=lambda q: angleBetweenPoints(p, q))
+    star = [p]
+    for q in clockwisePoints:
+        if q[0] > p[0]:
+            star.append(q)
+
+    return star
+
 def plot(points, rootPoint, candidatePoints, poly):
     plotter = GraphPlotter()
     plotter.update(points, rootPoint, candidatePoints, poly)
@@ -70,11 +79,7 @@ def main():
     points = np.array(list(pointGenerator(kmax)))
 
     for p in points:
-        clockwisePoints = sorted(list(points), key=lambda q: angleBetweenPoints(p, q))
-        star = [p]
-        for q in clockwisePoints:
-            if q[0] > p[0]:
-                star.append(q)
+        star = makeStar(p, points)
 
     plot(points, p, np.array(star), star)
 
