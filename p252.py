@@ -7,6 +7,7 @@ import math
 """
 Tried:
     97589.0
+    191815.0
 """
 
 def TGenerator(kmax):
@@ -69,21 +70,7 @@ def makeStar(p, points):
 
     return star
 
-def plot(points, rootPoint, candidatePoints, poly):
-    plotter = GraphPlotter()
-    plotter.update(points, rootPoint, candidatePoints, poly)
-
-def test():
-    # First 3 points are given in problem.
-    p = pointGenerator(3)
-    assert(next(p) == [527, 144])
-    assert(next(p) == [-488, 732])
-    assert(next(p) == [-454, -947])
-
-def main():
-    kmax = 20
-    points = np.array(list(pointGenerator(kmax)))
-
+def solve(points):
     aMax = 0
     biggest = None
     bestStar = None
@@ -104,6 +91,28 @@ def main():
             biggest = hole
             bestStar = star
             bestP = p
+
+    return aMax, biggest, bestStar, bestP
+
+def plot(points, rootPoint, candidatePoints, poly):
+    plotter = GraphPlotter()
+    plotter.update(points, rootPoint, candidatePoints, poly)
+
+def test():
+    # First 3 points are given in problem.
+    p = pointGenerator(3)
+    assert(next(p) == [527, 144])
+    assert(next(p) == [-488, 732])
+    assert(next(p) == [-454, -947])
+
+    aMax, biggest, bestStar, bestP = solve(np.array(list(pointGenerator(20))))
+    assert(aMax == 1049694.5)
+
+def main():
+    kmax = 500
+    points = np.array(list(pointGenerator(kmax)))
+    
+    aMax, biggest, bestStar, bestP = solve(points)
 
     print("Largest area: {}".format(aMax))
     plot(points, bestP, np.array(bestStar), biggest)
