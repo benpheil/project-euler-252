@@ -54,10 +54,16 @@ def angleBetweenPoints(p, q):
     diff = q - p
     return math.atan2(diff[1], diff[0])
 
+def turnDirection(p1, p2, p3):
+    if (p2[0] - p1[0]) * (p3[1] - p1[1]) - (p2[1] - p1[1]) * (p3[0] - p1[0]) > 0:
+        return 'left'
+    else:
+        return 'right'
+
 def makeStar(p, points):
-    clockwisePoints = sorted(list(points), key=lambda q: angleBetweenPoints(p, q))
+    ccwPoints = sorted(list(points), key=lambda q: angleBetweenPoints(p, q))
     star = [p]
-    for q in clockwisePoints:
+    for q in ccwPoints:
         if q[0] > p[0]:
             star.append(q)
 
@@ -75,13 +81,32 @@ def test():
     assert(next(p) == [-454, -947])
 
 def main():
-    kmax = 200
+    kmax = 20
     points = np.array(list(pointGenerator(kmax)))
 
+    aMax = 0
+    biggest = None
+    bestStar = None
+    bestP = None
     for p in points:
         star = makeStar(p, points)
+        if len(star) < 3:
+            continue
+        hole = [star[0], star[1]]
 
-    plot(points, p, np.array(star), star)
+        # Walk the points ccw
+        for idx in range(2, len(star)):
+            if turnDirection(hole[-2], hole[-1], star[idx]) == 'left':
+                hole.append(star[idx])
+        area = polygonArea(hole)
+        if area > aMax:
+            aMax = area
+            biggest = hole
+            bestStar = star
+            bestP = p
+
+    print("Largest area: {}".format(aMax))
+    plot(points, bestP, np.array(bestStar), biggest)
 
 if __name__ == '__main__':
     test()
