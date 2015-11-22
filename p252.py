@@ -79,11 +79,23 @@ def solve(points):
         star = makeStar(p, points)
         if len(star) < 3:
             continue
-        hole = [star[0], star[1]]
 
         # Walk the points ccw
+        hole = [star[0], star[1]]
         for idx in range(2, len(star)):
             if turnDirection(hole[-2], hole[-1], star[idx]) == 'left':
+                hole.append(star[idx])
+        area = polygonArea(hole)
+        if area > aMax:
+            aMax = area
+            biggest = hole
+            bestStar = star
+            bestP = p
+
+        # Walk the points cw
+        hole = [star[-1], star[-2]]
+        for idx in reversed(range(0, len(star) - 2)):
+            if turnDirection(hole[-2], hole[-1], star[idx]) == 'right':
                 hole.append(star[idx])
         area = polygonArea(hole)
         if area > aMax:
