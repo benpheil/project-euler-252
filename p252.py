@@ -74,6 +74,10 @@ def visibilityGraph(star):
     queues = [list() for p in star]
     edges = set()
 
+    def turn(ij, jk):
+        assert(ij[1] == jk[0])
+        return turnDirection(star[ij[0]], star[ij[1]], star[jk[1]])
+
     def proceed(i, j):
         while len(queues[i]) > 0 and turn((queues[i][0], i), (i, j)) == 'left':
             proceed(queues[i][0], j)
@@ -81,8 +85,10 @@ def visibilityGraph(star):
         edges.add((i, j))
         queues[j].insert(0, i)
 
-    for idx in range(1, N-1):
+    for idx in range(0, len(star) - 1):
         proceed(idx, idx + 1)
+
+    return edges
 
 def solve(points):
     aMax = 0
