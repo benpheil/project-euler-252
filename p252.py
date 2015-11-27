@@ -72,7 +72,9 @@ def makeStar(p, points):
 
 def visibilityGraph(star):
     queues = [list() for p in star]
-    edges = set()
+    edges = dict()
+    for i in range(0, len(star)):
+        edges[i] = set()
 
     def turn(ij, jk):
         assert(ij[1] == jk[0])
@@ -82,7 +84,8 @@ def visibilityGraph(star):
         while len(queues[i]) > 0 and turn((queues[i][0], i), (i, j)) == 'left':
             proceed(queues[i][0], j)
             queues[i].pop(0)
-        edges.add((i, j))
+        edges[i].add(j)
+        edges[j].add(i)
         queues[j].insert(0, i)
 
     for idx in range(0, len(star) - 1):
