@@ -70,18 +70,18 @@ def makeStar(p, points):
 
     return star
 
+def turn(star, ij, jk):
+        assert(ij[1] == jk[0])
+        return turnDirection(star[ij[0]], star[ij[1]], star[jk[1]])
+
 def visibilityGraph(star):
     queues = [list() for p in star]
     edges = dict()
     for i in range(0, len(star)):
         edges[i] = set()
 
-    def turn(ij, jk):
-        assert(ij[1] == jk[0])
-        return turnDirection(star[ij[0]], star[ij[1]], star[jk[1]])
-
     def proceed(i, j):
-        while len(queues[i]) > 0 and turn((queues[i][0], i), (i, j)) == 'left':
+        while len(queues[i]) > 0 and turn(star, (queues[i][0], i), (i, j)) == 'left':
             proceed(queues[i][0], j)
             queues[i].pop(0)
         edges[i].add(j)
@@ -93,6 +93,31 @@ def visibilityGraph(star):
 
     return edges
 
+def longestChains(star, vgEdges):
+    L = [0.] * len(star)
+    def treat(p):
+        print("  treating {}...".format(p))
+        incoming = [e for e in vgEdges[p] if e < p]
+        outgoing = [e for e in vgEdges[p] if e > p]
+        print("  incoming: {}".format(incoming))
+        print("  outgoing: {}".format(outgoing))
+        if len(outgoing) == 0:
+            return
+        l = len(outgoing) - 1
+        m = 0
+        for j in range(len(incoming) - 1, 0, -1):
+            L[incoming[j]] = m + 1
+            while l > 0 and turn(star, (incoming[j], p), (p, outgoing[l])) == 'left':
+                if L[outgoing[l]] > m:
+                    m = L[outgoing[l]]
+                    L[incoming[j]] = m + 1
+                l = l - 1
+
+    for p in range(len(star) - 1, 0, -1):
+        treat(p)
+
+    return L
+
 def solve(points):
     aMax = 0
     biggest = None
@@ -100,6 +125,12 @@ def solve(points):
     bestP = None
     for p in points:
         star = makeStar(p, points)
+        print("")
+        print("star: {}".format(star))
+        vgEdges = visibilityGraph(star)
+        print("VG: {}".format(vgEdges))
+        chains = longestChains(star, vgEdges)
+        print("Edges: {}".format(chains))
         if len(star) < 3:
             continue
 
@@ -144,7 +175,7 @@ def test():
     assert(aMax == 1049694.5)
 
 def main():
-    kmax = 500
+    kmax = 20
     points = np.array(list(pointGenerator(kmax)))
     
     aMax, biggest, bestStar, bestP = solve(points)
