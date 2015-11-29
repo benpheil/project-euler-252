@@ -33,7 +33,8 @@ class GraphPlotter(object):
         x = candidatePoints[:, 0]
         y = candidatePoints[:, 1]
         plt.scatter(x, y, c='r')
-        plt.scatter(rootPoint[0], rootPoint[1], c='g')
+        if rootPoint is not None:
+            plt.scatter(rootPoint[0], rootPoint[1], c='g')
         if poly is not None:
             p = Polygon(poly, facecolor='none')
             plt.gca().add_patch(p)
