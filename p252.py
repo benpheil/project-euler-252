@@ -164,15 +164,20 @@ def plot(points, rootPoint, candidatePoints, poly):
     plotter = GraphPlotter()
     plotter.update(points, rootPoint, candidatePoints, poly)
 
-def test():
+def testGenerator():
     # First 3 points are given in problem.
     p = pointGenerator(3)
     assert(next(p) == [527, 144])
     assert(next(p) == [-488, 732])
     assert(next(p) == [-454, -947])
 
+def testExample():
     aMax, biggest, bestStar, bestP = solve(np.array(list(pointGenerator(20))))
     assert(aMax == 1049694.5)
+
+def test():
+    testGenerator()
+    testExample()
 
 def main():
     kmax = 20
