@@ -89,8 +89,8 @@ def visibilityGraph(star):
         edges[j].add(i)
         queues[j].insert(0, i)
 
-    for idx in range(0, len(star) - 1):
-        proceed(idx, idx + 1)
+    for idx in range(0, len(star)):
+        proceed(idx, (idx + 1) % len(star))
 
     return edges
 
@@ -176,9 +176,27 @@ def testExample():
     aMax, biggest, bestStar, bestP = solve(np.array(list(pointGenerator(20))))
     assert(aMax == 1049694.5)
 
+def testEnumeration():
+    points = np.array(list(pointGenerator(5)))
+    leftMost = None
+    minX = float('inf')
+    for p in points:
+        if p[0] < minX:
+            minX = p[0]
+            leftMost = p
+    star = makeStar(leftMost, points)
+    print("star: {}".format(star))
+    vgEdges = visibilityGraph(star)
+    assert(vgEdges == {0: {1, 2, 3, 4}, 1: {0, 2, 3}, 2: {0, 1, 3}, 3: {0, 1, 2, 4}, 4: {0, 3}})
+    print("vg: {}".format(vgEdges))
+    chains = longestChains(star, vgEdges)
+    print("chains: {}".format(chains))
+    plot(points, None, np.array(star), np.array(star))
+
 def test():
     testGenerator()
     testExample()
+    testEnumeration()
 
 def main():
     kmax = 20
