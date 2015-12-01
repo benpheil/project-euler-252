@@ -103,13 +103,13 @@ def longestChains(star, vgEdges):
         m = 0
         for j in range(len(incoming) - 1, 0, -1):
             L[incoming[j]] = m + 1
-            while l > 0 and turn(star, (incoming[j], p), (p, outgoing[l])) == 'left':
+            while l >= 0 and turn(star, (incoming[j], p), (p, outgoing[l])) == 'left':
                 if L[outgoing[l]] > m:
                     m = L[outgoing[l]]
                     L[incoming[j]] = m + 1
                 l = l - 1
 
-    for p in range(len(star) - 1, 0, -1):
+    for p in range(len(star) - 2, 0, -1):
         treat(p)
 
     return L
