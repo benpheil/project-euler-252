@@ -97,11 +97,8 @@ def visibilityGraph(star):
 def longestChains(star, vgEdges):
     L = [0] * len(star)
     def treat(p):
-        print("  treating {}...".format(p))
         incoming = [e for e in vgEdges[p] if e < p]
         outgoing = [e for e in vgEdges[p] if e > p]
-        print("  incoming: {}".format(incoming))
-        print("  outgoing: {}".format(outgoing))
         if len(outgoing) == 0:
             return
         l = len(outgoing) - 1
@@ -126,12 +123,8 @@ def solve(points):
     bestP = None
     for p in points:
         star = makeStar(p, points)
-        print("")
-        print("star: {}".format(star))
         vgEdges = visibilityGraph(star)
-        print("VG: {}".format(vgEdges))
         chains = longestChains(star, vgEdges)
-        print("Edges: {}".format(chains))
         if len(star) < 3:
             continue
 
