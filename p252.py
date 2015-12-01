@@ -95,7 +95,7 @@ def visibilityGraph(star):
     return edges
 
 def longestChains(star, vgEdges):
-    L = [0.] * len(star)
+    L = [0] * len(star)
     def treat(p):
         print("  treating {}...".format(p))
         incoming = [e for e in vgEdges[p] if e < p]
