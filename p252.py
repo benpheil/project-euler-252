@@ -99,8 +99,6 @@ def longestChains(star, vgEdges):
     def treat(p):
         incoming = [e for e in vgEdges[p] if e < p]
         outgoing = [e for e in vgEdges[p] if e > p]
-        if len(outgoing) == 0:
-            return
         l = len(outgoing) - 1
         m = 0
         for j in range(len(incoming) - 1, 0, -1):
